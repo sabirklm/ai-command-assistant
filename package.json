@@ -1,7 +1,13 @@
 {
-  "name": "njs",
-  "version": "1.0.0",
-  "description": "",
+  "name": "ai-command-assistant",
+  "version": "0.1.0",
+  "description": "Convert natural language into safe executable CLI commands using local Ollama",
+  "author": "Sabir Mondal <sabirklm>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sabirklm/ai-command-assistant.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,8 +18,6 @@
     "njs": "./bin/app.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
