@@ -8,6 +8,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
+  "bin": {
+    "me": "./bin/me.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
