@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 
-const spawn = require("child_process");
+const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+const { generateCommand } = require("../src/ollama");
+const { isCommandSafe } = require("../src/safety");
+const { executeCommand } = require("../src/execute");
+
 const command = process.argv[2];
+const userPrompt = process.argv.slice(3).join(" ");
+
 const PID_FILE = path.join(__dirname, "../njs.pid");
 const SERVER_FILE = path.join(__dirname, "../index.js");
 
@@ -17,6 +23,7 @@ function isRunning(pid) {
   }
 }
 
+/* ---------- start ---------- */
 if (command === "start") {
   if (fs.existsSync(PID_FILE)) {
     const pid = fs.readFileSync(PID_FILE, "utf8");
@@ -37,6 +44,7 @@ if (command === "start") {
   console.log("Backend started");
 }
 
+/* ---------- stop ---------- */
 else if (command === "stop") {
   if (!fs.existsSync(PID_FILE)) {
     console.log("Backend not running");
@@ -53,6 +61,7 @@ else if (command === "stop") {
   }
 }
 
+/* ---------- status ---------- */
 else if (command === "status") {
   if (!fs.existsSync(PID_FILE)) {
     console.log("Backend not running");
@@ -60,11 +69,48 @@ else if (command === "status") {
   }
 
   const pid = fs.readFileSync(PID_FILE, "utf8");
-  console.log(isRunning(pid)
-    ? `Backend running (PID ${pid})`
-    : "Backend not running");
+  console.log(
+    isRunning(pid)
+      ? `Backend running (PID ${pid})`
+      : "Backend not running"
+  );
+}
+
+/* ---------- run (AI → command) ---------- */
+else if (command === "run") {
+  if (!userPrompt) {
+    console.log('Usage: njs run "<task>"');
+    process.exit(1);
+  }
+
+  (async () => {
+    const cmd = await generateCommand(userPrompt);
+
+    console.log("\n🧠 Generated command:\n");
+    console.log(cmd);
+
+    if (!isCommandSafe(cmd)) {
+      console.log("\n❌ Blocked unsafe command");
+      return;
+    }
+
+    const readline = require("readline");
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    rl.question("\nExecute this command? (y/n): ", (ans) => {
+      rl.close();
+      if (ans.toLowerCase() === "y") {
+        executeCommand(cmd);
+      } else {
+        console.log("Cancelled");
+      }
+    });
+  })();
 }
 
 else {
-  console.log("Usage: myapp start | stop | status");
+  console.log("Usage: njs start | stop | status | run \"<task>\"");
 }
