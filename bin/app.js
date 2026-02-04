@@ -100,14 +100,18 @@ else if (command === "run") {
       output: process.stdout
     });
 
-    rl.question("\nExecute this command? (y/n): ", (ans) => {
+    rl.question("\nExecute this command? (Y/n): ", (ans) => {
       rl.close();
-      if (ans.toLowerCase() === "y") {
+
+      const input = ans.trim().toLowerCase();
+
+      if (input === "" || input === "y" || input === "yes") {
         executeCommand(cmd);
       } else {
         console.log("Cancelled");
       }
     });
+
   })();
 }
 
