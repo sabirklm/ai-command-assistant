@@ -1,500 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>AI Agent - Ollama Backend</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+    <title>njs - Natural Language CLI Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
 
-    body {
-      background: #0f1419;
-      color: #e1e8ed;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
 
-    /* ---------- Header ---------- */
-    header {
-      background: #1a1f2e;
-      border-bottom: 1px solid #2a3441;
-      padding: 1rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        /* ---------- Header ---------- */
+        header {
+            padding: 2rem;
+            text-align: center;
+        }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    .logo-icon {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
+        .tagline {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
 
-    .logo h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #fff;
-    }
+        /* ---------- Hero Section ---------- */
+        .hero {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
 
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      color: #8899a6;
-    }
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background: #10b981;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
+        .hero p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
+        /* ---------- Demo Box ---------- */
+        .demo-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem auto;
+            max-width: 700px;
+        }
 
-    /* ---------- Chat Container ---------- */
-    .chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      max-width: 900px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-      overflow: hidden;
-    }
+        .demo-title {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
 
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1rem 0;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
+        .prompt-input {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            font-size: 1rem;
+            width: 100%;
+            color: #333;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
 
-    .message {
-      display: flex;
-      gap: 1rem;
-      animation: slideIn 0.3s ease-out;
-    }
+        .prompt-input:focus {
+            outline: none;
+            background: #fff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
 
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+        .prompt-input::placeholder {
+            color: #999;
+        }
 
-    .message.user {
-      flex-direction: row-reverse;
-    }
+        .command-output {
+            background: #1a1f2e;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: #10b981;
+            display: none;
+            margin-top: 1rem;
+        }
 
-    .message-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 0.875rem;
-      flex-shrink: 0;
-    }
+        .command-output.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
 
-    .message.user .message-avatar {
-      background: #667eea;
-      color: white;
-    }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
 
-    .message.assistant .message-avatar {
-      background: #2a3441;
-      color: #667eea;
-    }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .message-content {
-      background: #1a1f2e;
-      padding: 1rem 1.25rem;
-      border-radius: 12px;
-      max-width: 80%;
-      line-height: 1.6;
-    }
+        .command-prefix {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
 
-    .message.user .message-content {
-      background: #667eea;
-      color: white;
-    }
+        /* ---------- Examples Section ---------- */
+        .examples {
+            max-width: 900px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
 
-    .message-content p {
-      margin: 0;
-    }
+        .examples h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2.5rem;
+        }
 
-    .typing-indicator {
-      display: none;
-      gap: 0.25rem;
-      padding: 1rem;
-    }
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
 
-    .typing-indicator.active {
-      display: flex;
-    }
+        .example-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
 
-    .typing-dot {
-      width: 8px;
-      height: 8px;
-      background: #667eea;
-      border-radius: 50%;
-      animation: typing 1.4s infinite;
-    }
+        .example-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
 
-    .typing-dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
+        .example-prompt {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
 
-    .typing-dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+        .example-arrow {
+            opacity: 0.6;
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
 
-    @keyframes typing {
-      0%, 60%, 100% {
-        transform: translateY(0);
-        opacity: 0.7;
-      }
-      30% {
-        transform: translateY(-10px);
-        opacity: 1;
-      }
-    }
+        .example-command {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #10b981;
+        }
 
-    /* ---------- Input Area ---------- */
-    .input-area {
-      background: #1a1f2e;
-      border-radius: 12px;
-      padding: 1rem;
-      display: flex;
-      gap: 1rem;
-      border: 1px solid #2a3441;
-    }
+        /* ---------- Features Section ---------- */
+        .features {
+            max-width: 900px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
 
-    .input-area:focus-within {
-      border-color: #667eea;
-    }
+        .features h2 {
+            font-size: 2rem;
+            margin-bottom: 2.5rem;
+        }
 
-    #userInput {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #e1e8ed;
-      font-size: 1rem;
-      outline: none;
-    }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            text-align: left;
+        }
 
-    #userInput::placeholder {
-      color: #8899a6;
-    }
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
 
-    #sendBtn {
-      background: #667eea;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
 
-    #sendBtn:hover {
-      background: #5568d3;
-    }
+        .feature h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
 
-    #sendBtn:disabled {
-      background: #2a3441;
-      cursor: not-allowed;
-    }
+        .feature p {
+            opacity: 0.9;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
 
-    /* ---------- Empty State ---------- */
-    .empty-state {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      color: #8899a6;
-    }
+        /* ---------- CTA Section ---------- */
+        .cta {
+            text-align: center;
+            padding: 4rem 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-    .empty-state-icon {
-      font-size: 3rem;
-      opacity: 0.5;
-    }
+        .cta h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
 
-    .suggestions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-      width: 100%;
-    }
+        .cta p {
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            font-size: 1.125rem;
+        }
 
-    .suggestion {
-      background: #1a1f2e;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #2a3441;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+        .install-box {
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+            display: inline-block;
+            min-width: 320px;
+        }
 
-    .suggestion:hover {
-      border-color: #667eea;
-      transform: translateY(-2px);
-    }
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
 
-    .suggestion-title {
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-      color: #e1e8ed;
-    }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
 
-    .suggestion-text {
-      font-size: 0.875rem;
-      color: #8899a6;
-    }
+        /* ---------- Footer ---------- */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            opacity: 0.7;
+            font-size: 0.875rem;
+        }
 
-    /* ---------- Scrollbar ---------- */
-    .messages::-webkit-scrollbar {
-      width: 6px;
-    }
+        /* ---------- Responsive ---------- */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
 
-    .messages::-webkit-scrollbar-track {
-      background: transparent;
-    }
+            .logo {
+                font-size: 2.5rem;
+            }
 
-    .messages::-webkit-scrollbar-thumb {
-      background: #2a3441;
-      border-radius: 3px;
-    }
-
-    .messages::-webkit-scrollbar-thumb:hover {
-      background: #3a4451;
-    }
-
-    /* ---------- Responsive ---------- */
-    @media (max-width: 768px) {
-      .chat-container {
-        padding: 1rem;
-      }
-
-      .message-content {
-        max-width: 85%;
-      }
-
-      .suggestions {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+            .example-grid,
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <header>
-    <div class="logo">
-      <div class="logo-icon">AI</div>
-      <h1>Ollama Agent</h1>
-    </div>
-    <div class="status">
-      <span class="status-dot"></span>
-      <span>Connected</span>
-    </div>
-  </header>
+    <header>
+        <div class="logo">njs</div>
+        <div class="tagline">Your Natural Language CLI Assistant</div>
+    </header>
 
-  <div class="chat-container">
-    <div class="messages" id="messages">
-      <div class="empty-state" id="emptyState">
-        <div class="empty-state-icon">🤖</div>
-        <h2>How can I help you today?</h2>
-        <p>Ask me anything or try one of these suggestions:</p>
-        
-        <div class="suggestions">
-          <div class="suggestion" onclick="sendSuggestion('Explain quantum computing')">
-            <div class="suggestion-title">💡 Explain</div>
-            <div class="suggestion-text">Quantum computing basics</div>
-          </div>
-          <div class="suggestion" onclick="sendSuggestion('Write a Python function to sort an array')">
-            <div class="suggestion-title">💻 Code</div>
-            <div class="suggestion-text">Help with programming</div>
-          </div>
-          <div class="suggestion" onclick="sendSuggestion('Summarize the latest in AI research')">
-            <div class="suggestion-title">📰 Research</div>
-            <div class="suggestion-text">Current AI developments</div>
-          </div>
-          <div class="suggestion" onclick="sendSuggestion('Help me brainstorm ideas for a startup')">
-            <div class="suggestion-title">🚀 Brainstorm</div>
-            <div class="suggestion-text">Creative thinking partner</div>
-          </div>
+    <div class="hero">
+        <h1>Stop Memorizing Commands.<br>Just Tell Your CLI What to Do.</h1>
+        <p>
+            njs converts your natural language prompts into the exact CLI commands you need.
+            Powered by Ollama, running locally on your machine.
+        </p>
+    </div>
+
+
+
+    <section class="examples">
+        <h2>See It In Action</h2>
+        <div class="example-grid">
+            <div class="example-card"
+                onclick="showExample('write a commit message for my code changes', 'git add . && git commit -m &quot;feat: implement user authentication&quot;')">
+                <div class="example-prompt">"write a commit message for my code changes"</div>
+                <div class="example-arrow">↓</div>
+                <div class="example-command">git add . && git commit -m "feat: implement user authentication"</div>
+            </div>
+
+            <div class="example-card" onclick="showExample('commit all my changes', 'git add . && git commit')">
+                <div class="example-prompt">"commit all my changes"</div>
+                <div class="example-arrow">↓</div>
+                <div class="example-command">git add . && git commit</div>
+            </div>
+
+            <div class="example-card" onclick="showExample('run flutter doctor', 'flutter doctor')">
+                <div class="example-prompt">"run flutter doctor"</div>
+                <div class="example-arrow">↓</div>
+                <div class="example-command">flutter doctor</div>
+            </div>
+
+            <div class="example-card" onclick="showExample('start my flutter app', 'flutter run')">
+                <div class="example-prompt">"start my flutter app"</div>
+                <div class="example-arrow">↓</div>
+                <div class="example-command">flutter run</div>
+            </div>
+
+            <div class="example-card" onclick="showExample('show me git status', 'git status')">
+                <div class="example-prompt">"show me git status"</div>
+                <div class="example-arrow">↓</div>
+                <div class="example-command">git status</div>
+            </div>
+
+            <div class="example-card" onclick="showExample('install npm packages', 'npm install')">
+                <div class="example-prompt">"install npm packages"</div>
+                <div class="example-arrow">↓</div>
+                <div class="example-command">npm install</div>
+            </div>
         </div>
-      </div>
-      
-      <div class="message assistant" style="display: none;">
-        <div class="message-avatar">AI</div>
-        <div class="message-content">
-          <div class="typing-indicator">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-          </div>
+    </section>
+
+    <section class="features">
+        <h2>Why njs?</h2>
+        <div class="feature-list">
+            <div class="feature">
+                <div class="feature-icon">🧠</div>
+                <h3>Natural Language</h3>
+                <p>Describe what you want in plain English. No need to remember complex command syntax.</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>100% Local</h3>
+                <p>Powered by Ollama running on your machine. Your code and commands never leave your system.</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>Get instant command suggestions without breaking your flow. Built for developer productivity.</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <h3>Context Aware</h3>
+                <p>Understands your project context and suggests the right commands for your environment.</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🛠️</div>
+                <h3>Multi-Framework</h3>
+                <p>Works with Git, npm, Flutter, Docker, and any CLI tool you use daily.</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">📦</div>
+                <h3>Easy Setup</h3>
+                <p>Simple npm install and you're ready to go. No complex configuration required.</p>
+            </div>
         </div>
-      </div>
-    </div>
+    </section>
 
-    <div class="input-area">
-      <input 
-        type="text" 
-        id="userInput" 
-        placeholder="Type your message..." 
-        autocomplete="off"
-      />
-      <button id="sendBtn">Send</button>
-    </div>
-  </div>
+    <section class="cta">
+        <h2>Get Started Now</h2>
+        <p>Install njs and start commanding your CLI with natural language</p>
+        <div class="install-box">npm install -g njs</div>
+        <br>
+        <button class="copy-btn" onclick="copyInstall()">Copy Command</button>
+    </section>
 
-  <script>
-    const messagesDiv = document.getElementById('messages');
-    const emptyState = document.getElementById('emptyState');
-    const userInput = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
+    <footer>
+        © 2026 njs - Natural Language CLI Assistant. Powered by Ollama.
+    </footer>
 
-    // Handle Enter key
-    userInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
+    <script>
+        const promptInput = document.getElementById('promptInput');
+        const commandOutput = document.getElementById('commandOutput');
+        const commandText = document.getElementById('commandText');
 
-    sendBtn.addEventListener('click', sendMessage);
+        // Simulated command conversion (replace with actual API call)
+        const commandMap = {
+            'commit all my changes': 'git add . && git commit',
+            'commit my changes': 'git add . && git commit',
+            'write a commit message': 'git add . && git commit -m "Update code"',
+            'write a commit message for my code changes': 'git add . && git commit -m "feat: implement new feature"',
+            'run flutter doctor': 'flutter doctor',
+            'flutter run': 'flutter run',
+            'start my flutter app': 'flutter run',
+            'show me git status': 'git status',
+            'install npm packages': 'npm install',
+            'git status': 'git status',
+            'npm install': 'npm install'
+        };
 
-    function sendSuggestion(text) {
-      userInput.value = text;
-      sendMessage();
-    }
+        promptInput.addEventListener('input', debounce(async function () {
+            const prompt = this.value.trim().toLowerCase();
 
-    async function sendMessage() {
-      const message = userInput.value.trim();
-      if (!message) return;
+            if (!prompt) {
+                commandOutput.classList.remove('show');
+                return;
+            }
 
-      // Hide empty state
-      if (emptyState) {
-        emptyState.style.display = 'none';
-      }
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Add user message
-      addMessage(message, 'user');
-      userInput.value = '';
-      userInput.disabled = true;
-      sendBtn.disabled = true;
+            // Find matching command (in real implementation, call your backend)
+            let command = commandMap[prompt];
 
-      // Show typing indicator
-      const typingMsg = addMessage('', 'assistant', true);
+            if (!command) {
+                // Try partial match
+                for (let key in commandMap) {
+                    if (prompt.includes(key) || key.includes(prompt)) {
+                        command = commandMap[key];
+                        break;
+                    }
+                }
+            }
 
-      try {
-        // TODO: Replace with your actual Ollama API endpoint
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ message })
-        });
+            if (command) {
+                commandText.textContent = command;
+                commandOutput.classList.add('show');
+            } else {
+                commandText.textContent = 'Type a command description...';
+                commandOutput.classList.add('show');
+            }
+        }, 500));
 
-        const data = await response.json();
-        
-        // Remove typing indicator
-        typingMsg.remove();
-        
-        // Add assistant response
-        addMessage(data.response || 'Sorry, I couldn\'t process that.', 'assistant');
-        
-      } catch (error) {
-        typingMsg.remove();
-        addMessage('Error: Unable to connect to the backend. Please check your Ollama service.', 'assistant');
-        console.error('Error:', error);
-      }
+        function showExample(prompt, command) {
+            promptInput.value = prompt;
+            commandText.textContent = command;
+            commandOutput.classList.add('show');
+            promptInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
 
-      userInput.disabled = false;
-      sendBtn.disabled = false;
-      userInput.focus();
-    }
+        function copyInstall() {
+            navigator.clipboard.writeText('npm install -g njs');
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
 
-    function addMessage(text, sender, isTyping = false) {
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${sender}`;
-      
-      const avatar = document.createElement('div');
-      avatar.className = 'message-avatar';
-      avatar.textContent = sender === 'user' ? 'U' : 'AI';
-      
-      const content = document.createElement('div');
-      content.className = 'message-content';
-      
-      if (isTyping) {
-        content.innerHTML = `
-          <div class="typing-indicator active">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-          </div>
-        `;
-      } else {
-        content.innerHTML = `<p>${escapeHtml(text)}</p>`;
-      }
-      
-      messageDiv.appendChild(avatar);
-      messageDiv.appendChild(content);
-      messagesDiv.appendChild(messageDiv);
-      
-      // Scroll to bottom
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      
-      return messageDiv;
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-  </script>
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func.apply(this, args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
 
 </body>
+
 </html>
