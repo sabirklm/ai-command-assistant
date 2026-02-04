@@ -1,7 +1,9 @@
 const express = require('express');
+require("dotenv").config();
 const app = express();
-const port = 3344;
+const port = process.env.PORT || 3300;
 const os = require('os');
+
 
 function getLocalIPAddresses() {
     const interfaces = os.networkInterfaces();
