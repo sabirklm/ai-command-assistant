@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const command = process.argv[2];
-const PID_FILE = path.join(__dirname, "../myapp.pid");
+const PID_FILE = path.join(__dirname, "../njs.pid");
 const SERVER_FILE = path.join(__dirname, "../index.js");
 
 function isRunning(pid) {

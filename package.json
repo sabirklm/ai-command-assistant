@@ -9,7 +9,7 @@
     "dev": "nodemon index.js"
   },
   "bin": {
-    "me": "./bin/me.js"
+    "njs": "./bin/app.js"
   },
   "keywords": [],
   "author": "",
