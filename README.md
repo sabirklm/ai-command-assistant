@@ -61,7 +61,7 @@ ollama serve
 git clone https://github.com/sabirklm/ai-command-assistant.git
 cd ai-command-assistant
 npm install
-npm link
+npm install -g .
 ```
 
 ---
