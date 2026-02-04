@@ -24,7 +24,8 @@ function getLocalIPAddresses() {
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Hello, world!');
+    // res.send('Hello, world!');
+    res.sendFile(__dirname + "/pages/index.html");
 });
 
 
