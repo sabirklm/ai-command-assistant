@@ -60,6 +60,7 @@ ollama serve
 ```bash
 git clone https://github.com/sabirklm/ai-command-assistant.git
 cd ai-command-assistant
+npm uninstall -g njs
 npm install
 npm install -g .
 ```

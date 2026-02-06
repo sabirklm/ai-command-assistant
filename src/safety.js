@@ -1,12 +1,62 @@
 const ALLOWED_COMMANDS = [
+  // Version control
   "git",
-  "flutter",
+
+  // Node / JS ecosystem
+  "node",
   "npm",
   "npx",
   "yarn",
   "pnpm",
+  "bun",
+
+  // Mobile & frontend
+  "flutter",
+  "dart",
+  "adb",
+
+  // Containers & infra
   "docker",
-  "node"
+  "docker-compose",
+  "kubectl",
+  "helm",
+
+  // Networking / tunneling (ngrok & friends)
+  "ngrok",
+  "cloudflared",
+  "localtunnel",
+  "ssh",
+
+  // Build tools
+  "make",
+  "cmake",
+  "gradle",
+  "mvn",
+
+  // Package managers (system-level – be careful)
+  "brew",
+  "apt",
+  "apt-get",
+
+  // Utilities (safe-ish, commonly needed)
+  "curl",
+  "wget",
+  "http",
+  "jq",
+  "cat",
+  "ls",
+  "pwd",
+  "echo",
+
+  // Process & debugging (limit later if needed)
+  "ps",
+  "top",
+  "kill",
+
+  // Editors / viewers (optional)
+  "code",
+  "vim",
+  "nano"
 ];
 
 function isCommandSafe(cmd) {

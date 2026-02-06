@@ -4,6 +4,11 @@ const app = express();
 const port = process.env.PORT || 3300;
 const os = require('os');
 
+const helloRoutes = require("./routes/hello");
+
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
+
 
 function getLocalIPAddresses() {
     const interfaces = os.networkInterfaces();
@@ -22,11 +27,14 @@ function getLocalIPAddresses() {
 
 
 app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/", helloRoutes);
 
 app.get('/', (req, res) => {
     // res.send('Hello, world!');
     res.sendFile(__dirname + "/pages/index.html");
 });
+
 
 
 app.listen(port, () => {
