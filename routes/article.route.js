@@ -1,6 +1,7 @@
 const express = require("express");
 const { scrapeSite } = require("../scrapper/scrap.bbc");
 const { processArticleWithLLM } = require("../service/llm.ollama.service");
+const { addArticle } = require("../service/firebase.article.service");
 const router = express.Router();
 
 /**
@@ -106,12 +107,13 @@ function isValidUrl(url) {
  */
 async function processArticles(content) {
   const results = [];
-  
+
   for (const article of content) {
     const processedArticle = await processArticleWithLLM(article);
+    addArticle(processedArticle)
     results.push(processedArticle);
   }
-  
+
   return results;
 }
 

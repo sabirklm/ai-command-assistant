@@ -3,7 +3,7 @@ const { spawn } = require("child_process");
 function executeCommand(cmd) {
   const child = spawn(cmd, {
     stdio: "inherit",
-    shell: true   // ⭐ THIS IS THE KEY
+    shell: true
   });
 
   child.on("exit", (code) => {
