@@ -4,7 +4,7 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "My First API",
+      title: "Njs Swagger",
       version: "1.0.0",
       description: "Auto-generated API docs"
     }

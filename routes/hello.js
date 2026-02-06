@@ -1,4 +1,5 @@
 const express = require("express");
+const { sayHello, sayOk } = require("../controllers/hello.controller");
 const router = express.Router();
 
 /**
@@ -10,9 +11,7 @@ const router = express.Router();
  *       200:
  *         description: OK
  */
-router.get("/hello", (req, res) => {
-    res.send("Ok");
-});
+router.get("/hello", sayHello);
 
 /**
  * @swagger
@@ -23,8 +22,6 @@ router.get("/hello", (req, res) => {
  *       200:
  *         description: OK
  */
-router.get("/health", (req, res) => {
-    res.send("Ok");
-});
+router.get("/health", sayOk);
 
 module.exports = router;
