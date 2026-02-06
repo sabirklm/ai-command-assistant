@@ -3,6 +3,7 @@
 const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+require("dotenv").config();
 
 const { generateCommand } = require("../src/ollama");
 const { isCommandSafe } = require("../src/safety");
@@ -40,8 +41,9 @@ if (command === "start") {
 
   fs.writeFileSync(PID_FILE, child.pid.toString());
   child.unref();
-
-  console.log("Backend started");
+  const port = process.env.PORT || 3300;
+  console.log(`The backend is running... ${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 }
 
 /* ---------- stop ---------- */
