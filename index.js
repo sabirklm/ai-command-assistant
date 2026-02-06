@@ -5,6 +5,7 @@ const port = process.env.PORT || 3300;
 const os = require('os');
 
 const helloRoutes = require("./routes/hello");
+const userRoutes = require("./routes/user.route");
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
@@ -29,6 +30,7 @@ function getLocalIPAddresses() {
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/", helloRoutes);
+app.use("/", userRoutes);
 
 app.get('/', (req, res) => {
     // res.send('Hello, world!');
