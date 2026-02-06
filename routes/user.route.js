@@ -38,46 +38,10 @@ const router = express.Router();
  *                   type: object
  */
 router.post("/user", async (req, res) => {
-  try {
-    const { url } = req.body || {};
-
-    // 1️⃣ Check if url exists
-    if (!url) {
-      return res.status(400).json({
-        status: 400,
-        message: "url is required"
-      });
-    }
-
-    // 2️⃣ Validate URL format
-    try {
-      new URL(url);
-    } catch {
-      return res.status(400).json({
-        status: 400,
-        message: "invalid url format"
-      });
-    }
-
-    // 3️⃣ Call async function safely
-    const content = await scrapeSite(url);
-
-    res.status(200).json({
-      status: 200,
-      data: {
-        url,
-        content
-      }
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      status: 500,
-      message: "internal server error",
-      stackTrace: error,
-    });
-  }
+  res.send({
+    message: `Hello!! ${Date()}`,
+    data: req.data,
+  });
 });
 
 module.exports = router;

@@ -45,8 +45,12 @@ async function scrapeSite(url) {
         console.log("Content preview:", content.length);
         articlesRawData.push({
             title: title,
-            desc: content,
-            sourceUrl: articleUrl
+            content: content,
+            sourceUrl: articleUrl,
+            contentSize: content.length,
+            source: url,
+            language: "en"
+
         });
         // ⏱ rate limit
         await new Promise(r => setTimeout(r, 1500));
@@ -55,6 +59,4 @@ async function scrapeSite(url) {
 }
 
 // scrapeSite(url).catch(console.error);
-module.exports = {
-    scrapeSite
-}
+module.exports = { scrapeSite }

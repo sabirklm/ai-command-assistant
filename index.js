@@ -6,7 +6,7 @@ const os = require('os');
 
 const helloRoutes = require("./routes/hello");
 const userRoutes = require("./routes/user.route");
-
+const articleRoutes = require("./routes/article.route");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
 
@@ -31,6 +31,7 @@ app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/", helloRoutes);
 app.use("/", userRoutes);
+app.use("/", articleRoutes);
 
 app.get('/', (req, res) => {
     // res.send('Hello, world!');
